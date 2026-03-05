@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>نظام حجز الكراسي</title>
+
+<style>
+body{
+  font-family: Arial, sans-serif;
+  background: linear-gradient(to right,#eee9cc,#554602);
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  min-height:100vh;
+  padding:10px;
+}
+
+.container{
+  background:#fff;
+  padding:20px;
+  border-radius:15px;
+  width:90%;
+  max-width:380px;
+  text-align:center;
+  box-shadow:0 10px 25px rgba(0,0,0,0.2);
+}
+
+h2{
+  margin-bottom:20px;
+}
+
+input, button{
+  width:90%;
+  padding:12px;
+  margin:8px 0;
+  border-radius:8px;
+  border:1px solid #ccc;
+  font-size:16px;
+}
+
+button{
+  cursor:pointer;
+  color:#083a02;
+  border:none;
+}
+
+button:hover{opacity:0.9;}
+
+.ticket{
+  display:none;
+  margin-top:20px;
+  border:2px dashed #8e44ad;
+  padding:20px;
+  border-radius:10px;
+  background:#fdf2ff;
+}
+
+.print-btn{background:#27ae60;}
+.admin-btn{background:#34495e;}
+.delete-btn{background:#e74c3c;}
+
+#qrcode{
+  display:flex;
+  justify-content:center;
+  margin-top:15px;
+  flex-wrap:wrap;
+}
+
+table{
+  width:100%;
+  margin-top:20px;
+  border-collapse:collapse;
+  font-size:12px;
+  display:block;
+  overflow-x:auto;
+}
+
+th,td{
+  border:1px solid #ddd;
+  padding:5px;
+  font-size:13px;
+}
+
+@media (max-width:480px){
+  input,button{
+    font-size:14px;
+    padding:10px;
+  }
+  th,td{
+    font-size:11px;
+    padding:4px;
+  }
+}
+.img{
+  width:100%;
+  border-radius:10px;
+  margin-bottom:15px;
+}
+</style>
+</head>
+
+<body>
+<div class="container">
+
+<h2>حجز كرسي في مائدة الاحتفال</h2>
+<img src="2.jpeg" alt="صورة المائدة" class="img">
+
+<div id="formSection">
+  
+  <input type="text" id="name" placeholder="اكتب اسمك" required>
+  <input type="tel" id="phone" placeholder="رقم التليفون" maxlength="11" inputmode="numeric" required>
+  <button onclick="bookSeat()">احجز الآن</button>
+</div>
+
+<div class="ticket" id="ticket">
+  <h3>🎉 بطاقة الدعوة 🎉</h3>
+  <p><strong>الاسم:</strong> <span id="ticketName"></span></p>
+  <p><strong>التليفون:</strong> <span id="ticketPhone"></span></p>
+  <p><strong>رقم الكرسي:</strong> <span id="seatNumber"></span></p>
+  <p><strong>رقم المنضدة:</strong> <span id="tableNumber"></span></p>
+
+  <div id="qrcode"></div>
+
+  <button class="print-btn" onclick="window.print()">طباعة الدعوة</button>
+</div>
+
+<!-- زر دخول الأدمن -->
+<button onclick="adminLogin()">دخول الأدمن</button>
+
+<!-- لوحة الأدمن -->
+<div id="adminPanel" style="display:none;">
+  <button class="admin-btn" onclick="showAllBookings()">عرض كل الحجوزات</button>
+  <button onclick="exportCSV()">تصدير Excel</button>
+  <button class="delete-btn" onclick="clearBookings()">مسح كل الحجوزات</button>
+</div>
+
+<div id="allBookings"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script>
+// كلمة سر الأدمن
+const ADMIN_PASSWORD = "12345";
+
+// منع إدخال غير الأرقام في التليفون
+document.getElementById("phone").addEventListener("input", function(){
+  this.value = this.value.replace(/[^0-9]/g,'');
+});
+
+// حجز كرسي
+function bookSeat(){
+  let name = document.getElementById("name").value.trim();
+  let phone = document.getElementById("phone").value.trim();
+
+  if(name === "" || phone === ""){
+    alert("من فضلك ادخل كل البيانات");
+    return;
+  }
+
+  // رقم موبايل مصري صحيح
+  if(!/^01[0-5]\d{8}$/.test(phone)){
+    alert("ادخل رقم موبايل مصري صحيح");
+    return;
+  }
+
+  let bookings = JSON.parse(localStorage.getItem("bookings")) || [];
+
+  if(bookings.some(b => b.phone === phone)){
+    alert("تم الحجز مسبقًا بنفس الرقم");
+    return;
+  }
+
+  if(bookings.length >= 5000){
+    alert("تم حجز جميع الكراسي");
+    return;
+  }
+
+  let lastSeat = bookings.length>0 ? Math.max(...bookings.map(b=>b.seat)) : 0;
+  let seat = lastSeat + 1;
+  let table = Math.ceil(seat/10);
+
+  let booking = {name, phone, seat, table};
+
+  bookings.push(booking);
+  localStorage.setItem("bookings", JSON.stringify(bookings));
+
+  showTicket(booking);
+}
+
+// عرض التذكرة
+function showTicket(data){
+  document.getElementById("ticketName").innerText=data.name;
+  document.getElementById("ticketPhone").innerText=data.phone;
+  document.getElementById("seatNumber").innerText=data.seat;
+  document.getElementById("tableNumber").innerText=data.table;
+
+  document.getElementById("formSection").style.display="none";
+  document.getElementById("ticket").style.display="block";
+
+  generateQR(data);
+}
+
+// توليد QR
+function generateQR(data){
+  let qrContainer = document.getElementById("qrcode");
+  qrContainer.innerHTML="";
+  new QRCode(qrContainer,{
+    text:`الاسم: ${data.name}\nالمنضدة: ${data.table}\nالكرسي: ${data.seat}`,
+    width:120,
+    height:120
+  });
+}
+
+// دخول الأدمن
+function adminLogin(){
+  let pass = prompt("ادخل كلمة سر الأدمن");
+  if(pass === ADMIN_PASSWORD){
+    sessionStorage.setItem("adminLogged","true");
+    document.getElementById("adminPanel").style.display="block";
+    alert("تم الدخول كأدمن");
+  }else{
+    alert("كلمة السر غير صحيحة");
+  }
+}
+
+// إبقاء الأدمن مسجل
+if(sessionStorage.getItem("adminLogged")==="true"){
+  document.getElementById("adminPanel").style.display="block";
+}
+
+// عرض الحجوزات
+function showAllBookings(){
+  let bookings = JSON.parse(localStorage.getItem("bookings"))||[];
+  let container = document.getElementById("allBookings");
+  if(bookings.length===0){ container.innerHTML="لا يوجد حجوزات"; return; }
+
+  let html="<table><tr><th>الاسم</th><th>التليفون</th><th>الكرسي</th><th>المنضدة</th></tr>";
+  bookings.forEach(b=>{
+    html+=`<tr><td>${b.name}</td><td>${b.phone}</td><td>${b.seat}</td><td>${b.table}</td></tr>`;
+  });
+  html+="</table>";
+  container.innerHTML=html;
+}
+
+// تصدير CSV
+function exportCSV(){
+  let bookings = JSON.parse(localStorage.getItem("bookings"))||[];
+  if(bookings.length===0){ alert("لا يوجد بيانات"); return; }
+
+  let csv="الاسم,التليفون,الكرسي,المنضدة\n";
+  bookings.forEach(b=>{ csv+=`${b.name},${b.phone},${b.seat},${b.table}\n`; });
+
+  let blob=new Blob([csv],{type:'text/csv'});
+  let link=document.createElement("a");
+  link.href=URL.createObjectURL(blob);
+  link.download="bookings.csv";
+  link.click();
+}
+
+// مسح الحجوزات
+function clearBookings(){
+  if(confirm("هل أنت متأكد من مسح كل الحجوزات؟")){
+    localStorage.removeItem("bookings");
+    alert("تم المسح بنجاح");
+    location.reload();
+  }
+}
+</script>
+</body>
+</html>
