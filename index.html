@@ -1,44 +1,472 @@
 <!DOCTYPE html>
-<html lang="en" dir="rtl">
+<html lang="ar" dir="rtl">
+
 <head>
-    <meta charset="UTF-8" >
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="style.css">
-    <title>aldayar-elmasria</title>
+
+    <title>دعوة الاحتفالية</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            min-height: 100vh;
+            font-family: Tahoma, Arial, sans-serif;
+            background:
+                linear-gradient(rgba(8, 24, 30, 0.88), rgba(8, 24, 30, 0.88)),
+                url("https://images.unsplash.com/photo-1568322445389-f64ac2515020?auto=format&fit=crop&w=2000&q=80");
+            background-size: cover;
+            background-position: center;
+            color: #fff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 25px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 650px;
+            text-align: center;
+        }
+
+        /* الصفحة الأولى */
+
+        .welcome {
+            background: rgba(0, 0, 0, 0.72);
+            border: 2px solid #d4af37;
+            border-radius: 25px;
+            padding: 45px 30px;
+            box-shadow: 0 0 40px rgba(212, 175, 55, 0.25);
+        }
+
+        .symbol {
+            font-size: 65px;
+            margin-bottom: 15px;
+        }
+
+        .welcome h1 {
+            color: #d4af37;
+            font-size: 38px;
+            margin-bottom: 15px;
+        }
+
+        .welcome h2 {
+            font-size: 25px;
+            margin-bottom: 12px;
+        }
+
+        .welcome p {
+            color: #ddd;
+            font-size: 18px;
+            line-height: 1.8;
+            margin-bottom: 30px;
+        }
+
+        .input-box {
+            margin-bottom: 20px;
+        }
+
+        .input-box input {
+            width: 100%;
+            padding: 17px 20px;
+            border-radius: 12px;
+            border: 2px solid #d4af37;
+            background: rgba(255, 255, 255, 0.95);
+            font-size: 19px;
+            text-align: center;
+            outline: none;
+        }
+
+        .input-box input:focus {
+            box-shadow: 0 0 15px rgba(212, 175, 55, 0.5);
+        }
+
+        .btn {
+            width: 100%;
+            padding: 16px;
+            border: none;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #d4af37, #f5d76e);
+            color: #111;
+            font-size: 20px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(212, 175, 55, 0.35);
+        }
+
+        /* الدعوة */
+
+        .invitation {
+            display: none;
+        }
+
+        .invitation-card {
+            background:
+                linear-gradient(rgba(255, 248, 218, 0.95),
+                                rgba(255, 248, 218, 0.95)),
+                #fff;
+            color: #222;
+            padding: 12px;
+            border-radius: 5px;
+            box-shadow: 0 0 40px rgba(0, 0, 0, 0.5);
+        }
+
+        .invitation-inner {
+            border: 4px double #b28a20;
+            padding: 45px 30px;
+            position: relative;
+            min-height: 650px;
+        }
+
+        .invitation-inner::before,
+        .invitation-inner::after {
+            content: "𓂀";
+            position: absolute;
+            font-size: 55px;
+            color: #b28a20;
+            opacity: 0.8;
+        }
+
+        .invitation-inner::before {
+            top: 15px;
+            right: 20px;
+        }
+
+        .invitation-inner::after {
+            bottom: 15px;
+            left: 20px;
+        }
+
+        .egypt-title {
+            color: #a47712;
+            font-size: 19px;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+
+        .invitation-title {
+            font-size: 38px;
+            color: #1d3d45;
+            margin-bottom: 12px;
+        }
+
+        .october {
+            color: #a47712;
+            font-size: 23px;
+            font-weight: bold;
+            margin-bottom: 30px;
+        }
+
+        .separator {
+            width: 80%;
+            height: 2px;
+            background: #b28a20;
+            margin: 20px auto;
+        }
+
+        .guest-text {
+            font-size: 20px;
+            color: #555;
+            margin-top: 25px;
+        }
+
+        .guest-name {
+            font-size: 40px;
+            color: #1d3d45;
+            font-weight: bold;
+            margin: 18px 0;
+        }
+
+        .event-text {
+            font-size: 20px;
+            line-height: 2;
+            margin: 20px auto;
+            max-width: 500px;
+        }
+
+        .details {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-top: 35px;
+        }
+
+        .detail {
+            border: 1px solid #c5a33b;
+            padding: 15px 8px;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.5);
+        }
+
+        .detail strong {
+            display: block;
+            color: #a47712;
+            margin-bottom: 7px;
+        }
+
+        .footer {
+            margin-top: 35px;
+            color: #777;
+            font-size: 15px;
+        }
+
+        .print-btn {
+            margin-top: 20px;
+            background: #1d3d45;
+            color: white;
+        }
+
+        .back-btn {
+            margin-top: 10px;
+            background: #555;
+            color: white;
+        }
+
+        /* الموبايل */
+
+        @media (max-width: 600px) {
+
+            body {
+                padding: 12px;
+            }
+
+            .welcome {
+                padding: 35px 20px;
+            }
+
+            .welcome h1 {
+                font-size: 30px;
+            }
+
+            .welcome h2 {
+                font-size: 21px;
+            }
+
+            .symbol {
+                font-size: 50px;
+            }
+
+            .invitation-inner {
+                padding: 35px 18px;
+                min-height: 600px;
+            }
+
+            .invitation-title {
+                font-size: 30px;
+            }
+
+            .guest-name {
+                font-size: 31px;
+            }
+
+            .details {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* الطباعة */
+
+        @media print {
+
+            body {
+                background: white;
+                padding: 0;
+                display: block;
+            }
+
+            .welcome,
+            .print-btn,
+            .back-btn {
+                display: none !important;
+            }
+
+            .container {
+                max-width: none;
+            }
+
+            .invitation {
+                display: block !important;
+            }
+
+            .invitation-card {
+                box-shadow: none;
+                width: 100%;
+            }
+
+            .invitation-inner {
+                min-height: 0;
+                height: 100vh;
+            }
+        }
+    </style>
 </head>
+
 <body>
-    <div class="head">
-        <div class="logo"><img src="image/img/logo2.png" alt=""></div>
+
+    <div class="container">
+
+        <!-- شاشة إدخال الاسم -->
+
+        <section class="welcome" id="welcome">
+
+            <div class="symbol">𓂀</div>
+
+            <h1>احتفالية انتصارات أكتوبر</h1>
+
+            <h2>دعوة لحضور الاحتفالية</h2>
+
+            <p>
+                احتفالًا بذكرى انتصارات أكتوبر المجيدة
+                <br>
+                يسعد اتحاد شباب الأقصر حضوركم ومشاركتنا هذه المناسبة الوطنية
+            </p>
+
+            <div class="input-box">
+                <input
+                    type="text"
+                    id="guestName"
+                    placeholder="اكتب اسمك هنا"
+                    autocomplete="off">
+            </div>
+
+            <button class="btn" onclick="createInvitation()">
+                إصدار الدعوة
+            </button>
+
+        </section>
+
+
+        <!-- الدعوة -->
+
+        <section class="invitation" id="invitation">
+
+            <div class="invitation-card">
+
+                <div class="invitation-inner">
+
+                    <div class="egypt-title">
+                        جمهورية مصر العربية
+                    </div>
+
+                    <h1 class="invitation-title">
+                        دعوة كريمة
+                    </h1>
+
+                    <div class="october">
+                        بمناسبة ذكرى انتصارات أكتوبر المجيدة
+                    </div>
+
+                    <div class="separator"></div>
+
+                    <div class="guest-text">
+                        يتشرف كيان اتحاد شباب الأقصر بدعوة السيد / السيدة
+                    </div>
+
+                    <div class="guest-name" id="displayName">
+                        محمد شعبان
+                    </div>
+
+                    <div class="event-text">
+                        لحضور الاحتفالية الخاصة بذكرى
+                        <br>
+                        <strong>انتصارات أكتوبر المجيدة</strong>
+                        <br>
+                        ومشاركة فرحتنا بهذه المناسبة الوطنية العظيمة
+                    </div>
+
+                    <div class="details">
+
+                        <div class="detail">
+                            <strong>📅 التاريخ</strong>
+                            ٦ أكتوبر ٢٠٢٦
+                        </div>
+
+                        <div class="detail">
+                            <strong>🕐 الساعة</strong>
+                            10:30 صباحا
+                        </div>
+
+                        <div class="detail">
+                            <strong>📍 المكان</strong>
+                            قاعة المؤتمرات
+                        </div>
+
+                    </div>
+
+                    <div class="footer">
+                        حضوركم يسعدنا ويشرفنا
+                        <br>
+                        وكل عام ومصر بخير 🇪🇬
+                    </div>
+
+                </div>
+
+            </div>
+
+            <button class="btn print-btn" onclick="window.print()">
+                🖨️ طباعة الدعوة
+            </button>
+
+            <button class="btn back-btn" onclick="backToForm()">
+                ↩ تسجيل اسم آخر
+            </button>
+
+        </section>
+
     </div>
-    <nav class="navbar">
-        <ul>
-            <li><a href="#home">الصفحة الرئيسية</a></li>
-            <li><a href="#about">عن المكتب</a></li>
-            <li><a href="#services">الخدمات</a></li>
-            <li><a href="#projet">المشاريع</a></li>
-            <li><a href="#design">التصميم والأسلوب</a></li>
-            <li><a href="#contact">من نحن</a></li>
-        </ul>
-    </nav>
-<div class="ourservice">
-    <h1>خدماتنا</h1>
-    <div class="service">
-        <div class="service-item">
-            <img src="image/2.jpg" alt="">
-            <h2>تصميم داخلي</h2>
-            <p>نقدم خدمات التصميم الداخلي للمنازل والمكاتب.</p>
-        </div>
-        <div class="service-item">
-            <img src="image/3.jpg" alt="">
-            <h2>استشارات هندسية</h2>
-            <p>استشارات هندسية متكاملة للمشاريع المختلفة.</p>
-        </div>
-        <div class="service-item">
-            <img src="image/4.jpg" alt="">
-            <h2>إدارة مشاريع</h2>
-            <p>إدارة المشاريع من البداية حتى النهاية لضمان النجاح.</p>
-        </div>
-    </div>
-</div>
+
+
+    <script>
+
+        function createInvitation() {
+
+            const nameInput = document.getElementById("guestName");
+            const name = nameInput.value.trim();
+
+            if (name === "") {
+                alert("من فضلك اكتب اسمك أولاً");
+                nameInput.focus();
+                return;
+            }
+
+            document.getElementById("displayName").textContent = name;
+
+            document.getElementById("welcome").style.display = "none";
+            document.getElementById("invitation").style.display = "block";
+        }
+
+
+        function backToForm() {
+
+            document.getElementById("invitation").style.display = "none";
+            document.getElementById("welcome").style.display = "block";
+
+            document.getElementById("guestName").value = "";
+            document.getElementById("guestName").focus();
+        }
+
+
+        document.getElementById("guestName").addEventListener("keypress", function(event) {
+
+            if (event.key === "Enter") {
+                createInvitation();
+            }
+
+        });
+
+    </script>
+
 </body>
+
 </html>
